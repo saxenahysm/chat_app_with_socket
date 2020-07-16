@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <title>socket.io live chat server</title>
+</head>
+
+<body>
+    <!-- <h1>welcome in Live server</h1> -->
+    <div id="app">
+        <div class="container">
+            <div class="col-lg-6 offset-lg-3 mt-3">
+                <div class="card bg-info">
+                    <div class="card-header text-white ">
+                        Live server chat app
+                    </div>
+                    <ul class="list-group list-group-flush text-right">
+                        <small v-if="typing" class="text-white">user is typing</small>
+                        <li class="list-group-item" v-for="message in messages">
+                            <span :class="{'float-left':message.type === 1}">
+                                {{ message.message }}
+                            </span>
+                        </li>
+                    </ul>
+                    <div class="card-body">
+                        <form action="" @submit.prevent="send">
+                            <div class="from-group">
+                                <input type="text" name="" id="" class="form-control" v-model="newmessage"
+                                    placeholder="Type here">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- production version, optimized for size and speed -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <script>
+        var socket = io();
+        let app = new Vue({
+            el: '#app',
+            data: {
+                newmessage: null,
+                messages: [],
+                typing: false,
+            },
+
+            watch:{
+                newmessage(value){
+                    value ? socket.emit('typing'):socket.emit('stopTyping');
+                }
+            },
+
+            methods: {
+                send() {
+                    this.messages.push({
+                        message: this.newmessage,
+                        type: 0
+                    });
+                    socket.emit('chat-message', this.newmessage);
+                    //this.messages = null
+                }
+            },
+
+            created() {
+                //socket.emit('Created','Rohit kumar');
+                socket.on('Created', (data) => {
+                    console.log(data);
+                });
+
+                socket.on('chat-message', (data) => {
+                    this.messages.push({
+                        message: data,
+                        type: 1
+                    });
+                });
+
+                socket.on('typing',() =>{
+                    this.typing = true
+                });
+
+                socket.on('stopTyping',() =>{
+                    this.typing = false
+                });
+            },
+        });
+    </script>
+</body>
+
+</html>
