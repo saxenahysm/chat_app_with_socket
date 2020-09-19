@@ -2,7 +2,7 @@
 web-view demo with node js
 #how to run 
   1. run node index.json your terminal 
-    1.1 hit the url localhost:3000 in your browser
-  2. provide your nick name 
-  3. send message 
-  4. repeat from step 1.1
+  2 hit the url localhost:3000 in your browser
+  3. provide your nick name 
+  4. send message 
+  5. repeat from step 2
